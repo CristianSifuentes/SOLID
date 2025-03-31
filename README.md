@@ -117,7 +117,92 @@ This separation ensures each class has only one responsibility:
 
 ### 2. Open/Closed Principle (OCP)
 - Open for extension, closed for modification.
-- **Example**: `InvoicePersistence` is an interface; `DatabasePersistence` and `FilePersistence` are implementations.
+
+**Before Refactor**:
+```csharp
+public class CStore {
+    private List<CProduct> products = new List<CProduct>();
+
+    public CStore(List<CProduct> pProducts) {
+        this.products = pProducts;
+    }
+
+    public void CI(){
+        double total = 0;
+        foreach (CProduct cProduct in products){
+            Console.WriteLine(cProduct);
+            total += cProduct.Price;
+        }
+
+        // Discount logic by category
+        foreach(CProduct cProduct in products){
+            if (cProduct.Category == 1){
+                total += cProduct.Price * 0.9; // 10% discount
+            } else if (cProduct.Category == 2){
+                total += cProduct.Price * 0.8; // 20% discount
+            }
+        }
+    }
+}
+```
+This implementation violates OCP since new categories require modifying the `CI` method directly.
+
+**After Refactor**:
+```csharp
+abstract class CBaseInventory {
+    protected CProduct product;
+
+    public CProduct Product {
+        get { return product; }
+        set { product = value; }
+    }
+
+    public CBaseInventory(CProduct product) {
+        this.product = product;
+    }
+
+    public abstract double GetPrice();
+}
+
+class CAlimentInventory : CBaseInventory {
+    public CAlimentInventory(CProduct product) : base(product) {}
+    public override double GetPrice() {
+        product.Price *= 1.2; // 20% markup
+        return product.Price;
+    }
+}
+
+class CMedicamentInventory : CBaseInventory {
+    public CMedicamentInventory(CProduct product) : base(product) {}
+    public override double GetPrice() {
+        product.Price *= 0.8; // 20% discount
+        return product.Price;
+    }
+}
+
+class CStore {
+    private List<CBaseInventory> products;
+
+    public CStore(List<CBaseInventory> pProducts) {
+        products = pProducts;
+    }
+
+    public void CI() {
+        double total = 0;
+        foreach (CBaseInventory product in products) {
+            product.GetPrice();
+            Console.WriteLine(product);
+            total += product.Product.Price;
+        }
+        Console.WriteLine("Total is {0}", total);
+    }
+}
+```
+This refactor applies the Strategy Pattern and follows the Open/Closed Principle:
+- New categories can be added via subclasses of `CBaseInventory`.
+- Existing logic is untouched.
+
+![OCP Diagram](ocp-diagram-placeholder)
 
 ### 3. Liskov Substitution Principle (LSP)
 - Subclasses must behave like their base classes.
