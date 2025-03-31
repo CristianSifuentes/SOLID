@@ -2,15 +2,12 @@
     class Program{
         static void Main(string[] args){
 
-            Principal principal = new New("New");
-            principal.Show();
-            principal.OrherMethod();
+            PrincipalBase  newObj  = new New("New");
+            newObj.Show();
 
-            Principal principal1 = new Radio("Radio");
-            principal1.Show();
-
-            Console.ReadLine();
-            principal.OrherMethod();
+            PrincipalWithOtherMethod  radioObj = new Radio("Radio");
+            radioObj.Show();
+            radioObj.OtherMethod();
 
         }
     }

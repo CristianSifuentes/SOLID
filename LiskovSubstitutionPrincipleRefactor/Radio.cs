@@ -1,18 +1,18 @@
 namespace LiskovSubstitutionPrincipleRefactor{
 
-    class Radio : Principal{
+    class Radio : PrincipalWithOtherMethod{
         public Radio(string pMessage) : base(pMessage){
 
         }
 
-        public override void OrherMethod()
-        {
-            Console.WriteLine("From radio implement other medhod");
-        }
-
         public override void Show()
         {
-            Console.WriteLine("From radio : {0}", message);
+            Console.WriteLine("From radio: {0}", message);
+        }
+
+        public override void OtherMethod()
+        {
+            Console.WriteLine("From radio implement other method");
         }
     }
 }
