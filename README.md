@@ -206,7 +206,95 @@ This refactor applies the Strategy Pattern and follows the Open/Closed Principle
 
 ### 3. Liskov Substitution Principle (LSP)
 - Subclasses must behave like their base classes.
-- **Example**: `Square` inherits from `Rectangle` but breaks expected behavior, causing test failures.
+
+**Before Refactor**:
+```csharp
+class News {
+    protected string name;
+
+    public News(string name) {
+        this.name = name;
+    }
+
+    public virtual void Show() {
+        Console.WriteLine($"News: {name}");
+    }
+}
+
+class Radio : News {
+    public Radio(string name) : base(name) {}
+
+    public override void Show() {
+        Console.WriteLine($"Radio: {name}");
+    }
+}
+
+class Program {
+    static void Main(string[] args) {
+        News news = new News("New");
+        news.Show();
+
+        Radio radio = new Radio("Radio");
+        radio.Show();
+
+        News substitutedNews = new Radio("Substituted Radio");
+        substitutedNews.Show();
+    }
+}
+```
+This code technically follows LSP in the sense that a `Radio` object can substitute a `News` object, but it lacks the structural constraints that ensure consistent behavior across multiple subclasses.
+
+**After Refactor**:
+```csharp
+abstract class PrincipalBase {
+    protected string message;
+    public PrincipalBase(string pMessage) {
+        message = pMessage;
+    }
+    public abstract void Show();
+}
+
+abstract class PrincipalWithOtherMethod : PrincipalBase {
+    public PrincipalWithOtherMethod(string pMessage): base(pMessage) {}
+    public abstract void OtherMethod();
+}
+
+class New : PrincipalBase {
+    public New(string pMessage): base(pMessage) {}
+
+    public override void Show() {
+        Console.WriteLine("From new : {0}", message);
+    }
+}
+
+class Radio : PrincipalWithOtherMethod {
+    public Radio(string pMessage) : base(pMessage) {}
+
+    public override void Show() {
+        Console.WriteLine("From radio: {0}", message);
+    }
+
+    public override void OtherMethod() {
+        Console.WriteLine("From radio implement other method");
+    }
+}
+
+class Program {
+    static void Main(string[] args) {
+        PrincipalBase newObj = new New("New");
+        newObj.Show();
+
+        PrincipalWithOtherMethod radioObj = new Radio("Radio");
+        radioObj.Show();
+        radioObj.OtherMethod();
+    }
+}
+```
+This design enforces LSP by using abstract base classes (`PrincipalBase` and `PrincipalWithOtherMethod`) with clearly defined behaviors:
+- Each subclass must implement the required methods.
+- Ensures predictable substitution and consistent interface usage.
+
+![LSP Diagram](lsp-diagram-placeholder)
 
 ### 4. Interface Segregation Principle (ISP)
 - Interfaces should be small and specific.
