@@ -113,7 +113,10 @@ This separation ensures each class has only one responsibility:
 - `CEmployee`: holds data
 - `CTaxesDepartment`: manages tax logic
 
-![SRP Diagram](srp-diagram-placeholder)
+<!-- ![SRP Diagram](srp-diagram-placeholder) -->
+![imagen1](https://github.com/CristianSifuentes/SOLID/blob/feature/refactor-solid-2/OECM.png)
+
+
 
 ### 2. Open/Closed Principle (OCP)
 - Open for extension, closed for modification.
@@ -298,11 +301,186 @@ This design enforces LSP by using abstract base classes (`PrincipalBase` and `Pr
 
 ### 4. Interface Segregation Principle (ISP)
 - Interfaces should be small and specific.
-- **Example**: `FreeParking` benefits from separated interfaces for payment and capacity.
+
+**Before Refactor**:
+```csharp
+interface IMultifunctional {
+    void Print();
+    void Scanner();
+    void Telephone();
+    void Fax();
+}
+
+class OfficeFax : IMultifunctional {
+    public void Fax() {
+        Console.WriteLine("Fax");
+    }
+
+    public void Print() {
+        throw new NotImplementedException();
+    }
+
+    public void Scanner() {
+        throw new NotImplementedException();
+    }
+
+    public void Telephone() {
+        Console.WriteLine("Telephone");
+    }
+}
+
+class MultiSingle : IMultifunctional {
+    public void Fax() {
+        throw new NotImplementedException();
+    }
+
+    public void Print() {
+        Console.WriteLine("Print");
+    }
+
+    public void Scanner() {
+        Console.WriteLine("Scanner");
+    }
+
+    public void Telephone() {
+        throw new NotImplementedException();
+    }
+}
+```
+This design violates ISP by forcing classes to implement methods they don't support.
+
+**After Refactor**:
+```csharp
+interface IMultifunctionalBasic {
+    void Print();
+    void Scanner();
+}
+
+interface IFax {
+    void Telephone();
+    void Fax();
+}
+
+interface IMultifunctional : IFax, IMultifunctionalBasic {}
+
+class OfficeFax : IFax {
+    public void Fax() {
+        Console.WriteLine("Fax");
+    }
+    public void Telephone() {
+        Console.WriteLine("Telephone");
+    }
+}
+
+class MultiAdvanced : IMultifunctional {
+    public void Fax() {
+        Console.WriteLine("Fax");
+    }
+    public void Print() {
+        Console.WriteLine("Print");
+    }
+    public void Scanner() {
+        Console.WriteLine("Scanner");
+    }
+    public void Telephone() {
+        Console.WriteLine("Telephone");
+    }
+}
+
+class MultiAdvancedBasic : IMultifunctionalBasic {
+    public void Print() {
+        Console.WriteLine("Print");
+    }
+    public void Scanner() {
+        Console.WriteLine("Scanner");
+    }
+}
+```
+This solution aligns with the Interface Segregation Principle:
+- Clients implement only the functionality they support.
+- Reduces need for throwing `NotImplementedException()`.
+
+![ISP Diagram](isp-diagram-placeholder)
 
 ### 5. Dependency Inversion Principle (DIP)
 - Depend on abstractions, not on concrete implementations.
-- **Example**: `PersistenceManager` uses `InvoicePersistence` instead of specific classes.
+
+**Before Refactor**:
+```csharp
+class Store {
+    private List<Product> inventory = new List<Product>();
+    public List<Product> Inventory {
+        get => inventory;
+        set => inventory = value;
+    }
+
+    public void AddProduct(Product pProduct) {
+        inventory.Add(pProduct);
+        Console.WriteLine("Add {0}", pProduct.Nombre);
+    }
+}
+
+class Auditor {
+    private Store myStore;
+    public Auditor(Store pStore) {
+        myStore = pStore;
+    }
+
+    public double totalAliments() {
+        double total = 0;
+        foreach (Product p in myStore.Inventory) {
+            if (p.Tipo == 0) {
+                Console.WriteLine(p);
+                total += p.Price;
+            }
+        }
+        return total;
+    }
+}
+```
+This implementation tightly couples `Auditor` to `Store`, violating the DIP.
+
+**After Refactor**:
+```csharp
+interface IAuditable {
+    IEnumerable<Product> GetProducts(int pTipo);
+}
+
+class Store : IAuditable {
+    private List<Product> inventory = new List<Product>();
+
+    public void AddProduct(Product pProduct) {
+        inventory.Add(pProduct);
+        Console.WriteLine("Add {0}", pProduct.Nombre);
+    }
+
+    public IEnumerable<Product> GetProducts(int pTipo) {
+        return inventory.Where(p => p.Tipo == pTipo);
+    }
+}
+
+class Auditor {
+    private IAuditable store;
+    public Auditor(IAuditable pStore) {
+        store = pStore;
+    }
+
+    public double totalAliments() {
+        double total = 0;
+        IEnumerable<Product> list = store.GetProducts(0);
+        foreach (Product p in list) {
+            Console.WriteLine(p);
+            total += p.Price;
+        }
+        return total;
+    }
+}
+```
+This refactor applies DIP by introducing the `IAuditable` abstraction:
+- `Auditor` depends only on the interface, not on the concrete class.
+- Increases flexibility and testability.
+
+![DIP Diagram](dip-diagram-placeholder)
 
 ---
 
