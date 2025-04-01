@@ -47,6 +47,9 @@ The SOLID principles are five key rules in object-oriented design that help you 
 ## SOLID Principles Summary
 
 ### 1. Single Responsibility Principle (SRP)
+
+![imagen1](Images/SRP.png)
+
 - A class should have only one reason to change.
 
 **Before Refactor**:
@@ -113,11 +116,11 @@ This separation ensures each class has only one responsibility:
 - `CEmployee`: holds data
 - `CTaxesDepartment`: manages tax logic
 
-![imagen1](Images/SRP.png)
-
-
 
 ### 2. Open/Closed Principle (OCP)
+
+![imagen2](Images/OECM.png)
+
 - Open for extension, closed for modification.
 
 **Before Refactor**:
@@ -204,9 +207,11 @@ This refactor applies the Strategy Pattern and follows the Open/Closed Principle
 - New categories can be added via subclasses of `CBaseInventory`.
 - Existing logic is untouched.
 
-![OCP Diagram](ocp-diagram-placeholder)
-
 ### 3. Liskov Substitution Principle (LSP)
+
+![imagen3](Images/LISK.png)
+
+
 - Subclasses must behave like their base classes.
 
 **Before Refactor**:
@@ -296,9 +301,10 @@ This design enforces LSP by using abstract base classes (`PrincipalBase` and `Pr
 - Each subclass must implement the required methods.
 - Ensures predictable substitution and consistent interface usage.
 
-![LSP Diagram](lsp-diagram-placeholder)
-
 ### 4. Interface Segregation Principle (ISP)
+
+![imagen4](Images/ISP.png)
+
 - Interfaces should be small and specific.
 
 **Before Refactor**:
@@ -399,9 +405,10 @@ This solution aligns with the Interface Segregation Principle:
 - Clients implement only the functionality they support.
 - Reduces need for throwing `NotImplementedException()`.
 
-![ISP Diagram](isp-diagram-placeholder)
-
 ### 5. Dependency Inversion Principle (DIP)
+![imagen5](Images/DIP.png)
+
+
 - Depend on abstractions, not on concrete implementations.
 
 **Before Refactor**:
@@ -478,8 +485,6 @@ class Auditor {
 This refactor applies DIP by introducing the `IAuditable` abstraction:
 - `Auditor` depends only on the interface, not on the concrete class.
 - Increases flexibility and testability.
-
-![DIP Diagram](dip-diagram-placeholder)
 
 ---
 
