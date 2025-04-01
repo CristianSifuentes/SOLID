@@ -1,5 +1,5 @@
 namespace InterfaceSegregationPrinciple {
-    class OficinaFax : IMultifunctional
+    class OfficeFax : IMultifunctional
     {
         public void Fax()
         {
