@@ -113,8 +113,7 @@ This separation ensures each class has only one responsibility:
 - `CEmployee`: holds data
 - `CTaxesDepartment`: manages tax logic
 
-<!-- ![SRP Diagram](srp-diagram-placeholder) -->
-![imagen1](https://github.com/CristianSifuentes/SOLID/blob/feature/refactor-solid-2/OECM.png)
+![imagen1](Images/SRP.png)
 
 
 
